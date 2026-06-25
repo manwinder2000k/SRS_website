@@ -3,21 +3,27 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafafa;
-  --foreground: #09090b;
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(228, 228, 231, 0.6);
-  --primary: #6366f1;
-  --primary-glow: rgba(99, 102, 241, 0.15);
+  --background: #f8f9fc;
+  --foreground: #0d1220;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(200, 210, 235, 0.6);
+  --primary: #1e2f6b;
+  --primary-light: #1565c0;
+  --accent: #c0392b;
+  --primary-glow: rgba(30, 47, 107, 0.12);
+  --accent-glow: rgba(192, 57, 43, 0.10);
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #f4f4f5;
-  --card-bg: rgba(20, 20, 25, 0.6);
-  --card-border: rgba(39, 39, 42, 0.6);
-  --primary: #818cf8;
-  --primary-glow: rgba(129, 140, 248, 0.15);
+  --background: #08090f;
+  --foreground: #e8ecf5;
+  --card-bg: rgba(14, 18, 35, 0.75);
+  --card-border: rgba(30, 47, 107, 0.25);
+  --primary: #4a72d4;
+  --primary-light: #79a8f0;
+  --accent: #e05444;
+  --primary-glow: rgba(74, 114, 212, 0.15);
+  --accent-glow: rgba(224, 84, 68, 0.10);
 }
 
 @theme {
@@ -26,7 +32,8 @@
   --color-card: var(--card-bg);
   --color-border-custom: var(--card-border);
   --color-brand-primary: var(--primary);
-  
+  --color-brand-accent: var(--accent);
+
   --animate-marquee: marquee 30s linear infinite;
   --animate-marquee-slow: marquee 45s linear infinite;
   --animate-marquee-reverse: marquee-reverse 30s linear infinite;
@@ -60,20 +67,20 @@ body {
 
 /* Custom styled scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #a1a1aa;
+  background: #1e2f6b;
   border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #3f3f46;
+  background: #2a3f8f;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #71717a;
+  background: #c0392b;
 }
 
 /* Glassmorphism custom classes */
@@ -84,18 +91,28 @@ body {
   border: 1px solid var(--card-border);
 }
 
+/* Primary brand gradient: Navy → Blue */
 .text-gradient {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
+  background-image: linear-gradient(135deg, #c0392b 0%, #1e2f6b 50%, #1565c0 100%);
 }
 
+/* Secondary gradient: Crimson → Navy */
+.text-gradient-alt {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, #1565c0 0%, #1e2f6b 100%);
+}
+
+/* Legacy alias kept for WebDevSection */
 .text-gradient-cyan {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  background-image: linear-gradient(135deg, #1565c0 0%, #1e2f6b 100%);
 }
 
 /* Grid background accent */
@@ -110,5 +127,26 @@ body {
 }
 .interactive-card:hover {
   border-color: var(--primary);
-  box-shadow: 0 10px 30px -10px var(--primary-glow);
+  box-shadow: 0 10px 30px -10px var(--primary-glow), 0 4px 16px -4px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+/* Branded badge pill */
+.badge-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(30, 47, 107, 0.20);
+  background: rgba(30, 47, 107, 0.06);
+  padding: 3px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1e2f6b;
+  letter-spacing: 0.03em;
+}
+.dark .badge-brand {
+  border-color: rgba(74, 114, 212, 0.25);
+  background: rgba(74, 114, 212, 0.08);
+  color: #79a8f0;
 }

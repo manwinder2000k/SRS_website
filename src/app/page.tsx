@@ -14,6 +14,7 @@ import DownloadSection from "@/components/DownloadSection";
 import ContactSection from "@/components/ContactSection";
 import DemoModal from "@/components/DemoModal";
 import Footer from "@/components/Footer";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const TESTIMONIALS = [
   {
@@ -101,13 +102,31 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-indigo-500 selection:text-white dark:selection:bg-cyan-500 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-[#1e2f6b] selection:text-white dark:selection:bg-[#1565c0] transition-colors duration-300">
+
+      {/* Scroll Progress Bar */}
+      <ScrollProgress />
 
       {/* Dynamic Background decorative glow blobs */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30 dark:opacity-40">
-        <div className="absolute top-[10%] left-[-10%] h-[400px] w-[400px] rounded-full bg-indigo-500/5 blur-[120px]" />
-        <div className="absolute top-[50%] right-[-10%] h-[500px] w-[500px] rounded-full bg-cyan-500/5 blur-[150px]" />
-        <div className="absolute bottom-[-10%] left-[20%] h-[350px] w-[350px] rounded-full bg-purple-500/5 blur-[100px]" />
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-40 dark:opacity-50">
+        <motion.div
+          className="absolute top-[5%] left-[-8%] h-[450px] w-[450px] rounded-full blur-[130px]"
+          style={{ background: 'radial-gradient(circle, rgba(30,47,107,0.14) 0%, transparent 70%)' }}
+          animate={{ x: [0, 30, -20, 0], y: [0, -25, 20, 0] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-[50%] right-[-8%] h-[500px] w-[500px] rounded-full blur-[150px]"
+          style={{ background: 'radial-gradient(circle, rgba(192,57,43,0.09) 0%, transparent 70%)' }}
+          animate={{ x: [0, -35, 20, 0], y: [0, 30, -20, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-[-5%] left-[25%] h-[350px] w-[350px] rounded-full blur-[110px]"
+          style={{ background: 'radial-gradient(circle, rgba(21,101,192,0.12) 0%, transparent 70%)' }}
+          animate={{ x: [0, 20, -30, 0], y: [0, -20, 30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
       {/* Navbar Header */}
@@ -139,28 +158,56 @@ export default function Home() {
         <WebDevSection />
 
         {/* Testimonials Block */}
-        <section className="relative py-20 bg-zinc-50 dark:bg-zinc-950/45 sm:py-24 border-y border-zinc-200/50 dark:border-zinc-850">
+        <section className="relative py-20 bg-[#f0f3fa] dark:bg-zinc-950/60 sm:py-24 border-y border-[#d4daf0]/60 dark:border-[#1e2f6b]/20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Header Title */}
             <div className="text-center max-w-3xl mx-auto space-y-4">
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/5 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-cyan-400">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                className="badge-brand inline-flex"
+              >
                 <MessageSquareQuote className="h-3.5 w-3.5" />
                 Customer Success
-              </div>
-              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
-                What Our Partners Say About <br /><span className="text-gradient ">VISION SOFTWARE SOLUTIONS</span>
-              </h2>
-              <p className="text-zinc-650 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+              </motion.div>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.1 }}
+                className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl"
+              >
+                What Our Partners Say About <br /><span className="text-gradient">VISION SOFTWARE SOLUTIONS</span>
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.2 }}
+                className="text-zinc-650 dark:text-zinc-400 text-sm sm:text-base leading-relaxed"
+              >
                 Feedback from technical directors and founders who rely on S.R Software Solutions platforms every day.
-              </p>
+              </motion.p>
             </div>
 
             {/* Testimonials Grid Cards */}
-            <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
+            <motion.div
+              className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+            >
               {TESTIMONIALS.map((test, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="interactive-card flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/40 relative overflow-hidden group"
+                  variants={{
+                    hidden: { opacity: 0, y: 40, scale: 0.96 },
+                    visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } },
+                  }}
+                  whileHover={{ y: -6, transition: { type: "spring", stiffness: 300 } }}
+                  className="interactive-card flex flex-col justify-between rounded-2xl border border-[#d4daf0]/70 bg-white p-6 shadow-sm dark:border-[#1e2f6b]/25 dark:bg-[#0e1223]/70 relative overflow-hidden group"
                 >
                   <div className="space-y-4">
                     {/* Stars */}
@@ -173,8 +220,8 @@ export default function Home() {
                       &ldquo;{test.quote}&rdquo;
                     </p>
                   </div>
-                  <div className="mt-6 border-t border-zinc-100 pt-4 dark:border-zinc-800/80 flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white font-extrabold flex items-center justify-center text-sm">
+                  <div className="mt-6 border-t border-[#e8ecf5] pt-4 dark:border-[#1e2f6b]/30 flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-[#c0392b] to-[#1e2f6b] text-white font-extrabold flex items-center justify-center text-sm">
                       {test.author[0]}
                     </div>
                     <div>
@@ -182,9 +229,9 @@ export default function Home() {
                       <div className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium">{test.role}</div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 

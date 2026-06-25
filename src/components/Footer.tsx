@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldCheck, Mail, Send, CheckCircle2, Globe } from "lucide-react";
+import Image from "next/image";
+import { Mail, Send, CheckCircle2, Globe } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -26,13 +27,14 @@ export default function Footer() {
 
           {/* Brand/Summary column */}
           <div className="sm:col-span-2 md:col-span-5 space-y-4">
-            <a href="#home" className="flex items-center gap-2 group w-fit">
-              <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-500 text-white shadow-md">
-                <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
-              </div>
-              <span className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white">
-                VISION SOFTWARE SOLUTIONS
-              </span>
+            <a href="#home" className="flex items-center group w-fit">
+              <Image
+                src="/vision-logo.png"
+                alt="Gulati's Vision Software & Website Development"
+                width={140}
+                height={56}
+                className="h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-sm"
+              />
             </a>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-sm">
               Designing high-performance, compliant, and intuitive enterprise products. Empowering companies globally to scale operations with confidence.
@@ -70,13 +72,13 @@ export default function Footer() {
               Navigation
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 text-xs sm:text-sm">
-              <a href="#home" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">Home Page</a>
-              <a href="#about" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">About Us</a>
-              <a href="#products" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">Products</a>
-              <a href="#webdev" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">Web Development</a>
-              <a href="#clients" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">Our Clients</a>
-              <a href="#download" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">Downloads</a>
-              <a href="#contact" className="text-zinc-600 hover:text-indigo-650 dark:text-zinc-400 dark:hover:text-cyan-400 transition">Contact Us</a>
+              <a href="#home" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">Home Page</a>
+              <a href="#about" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">About Us</a>
+              <a href="#products" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">Products</a>
+              <a href="#webdev" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">Web Development</a>
+              <a href="#clients" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">Our Clients</a>
+              <a href="#download" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">Downloads</a>
+              <a href="#contact" className="text-zinc-600 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:text-[#4fc3f7] transition">Contact Us</a>
             </div>
           </div>
 
@@ -101,7 +103,7 @@ export default function Footer() {
                 />
                 <button
                   type="submit"
-                  className="shrink-0 rounded-lg bg-zinc-950 px-3 py-2 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:brightness-110 active:scale-[0.98] transition cursor-pointer"
+                  className="shrink-0 rounded-lg bg-[#1e2f6b] px-3 py-2 text-white dark:bg-[#1565c0] dark:text-white hover:brightness-110 active:scale-[0.98] transition cursor-pointer"
                 >
                   <Send className="h-4 w-4" />
                 </button>

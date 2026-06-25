@@ -55,8 +55,8 @@ export default function DownloadSection() {
 
         {/* Title block */}
         <div className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/5 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-cyan-400">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#1e2f6b]/20 bg-[#1e2f6b]/5 px-3 py-1 text-xs font-semibold text-[#1e2f6b] dark:text-[#79a8f0] dark:border-[#4a72d4]/25 dark:bg-[#4a72d4]/8">
+            <Sparkles className="h-3.5 w-3.5 text-[#c0392b]" />
             Resource Downloads
           </div>
           <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl lg:text-4xl">
@@ -98,7 +98,7 @@ export default function DownloadSection() {
                   {state === "idle" && (
                     <button
                       onClick={() => triggerDownload(res.id)}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-900 py-2.5 sm:py-3 text-xs font-bold transition hover:brightness-110 cursor-pointer"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1e2f6b] to-[#1565c0] text-white py-2.5 sm:py-3 text-xs font-bold transition hover:brightness-110 cursor-pointer"
                     >
                       <Download className="h-4 w-4" />
                       Download Resource
