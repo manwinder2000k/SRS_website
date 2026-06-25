@@ -121,9 +121,11 @@ body {
   background-size: 24px 24px;
 }
 
-/* Smooth active state borders */
+/* Smooth active state borders — only transition what's needed, not 'all' */
 .interactive-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .interactive-card:hover {
   border-color: var(--primary);
@@ -149,4 +151,224 @@ body {
   border-color: rgba(74, 114, 212, 0.25);
   background: rgba(74, 114, 212, 0.08);
   color: #79a8f0;
+}
+
+/* ── Performance: will-change hint for hover cards ───────── */
+.interactive-card {
+  will-change: transform;
+}
+
+/* ── Entrance animations — synced to browser compositor (vsync) ── */
+/* These replace JS-driven Framer Motion entrance animations that */
+/* caused jitter by fighting each other on the JS thread at load. */
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-fade-in-left {
+  animation: fade-in-left 0.45s ease-out both;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out 0.1s both;
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.nav-link-enter {
+  animation: fade-in-down 0.35s ease-out both;
+}
+
+/* ── Mobile glass blur override (saves GPU paint) ──────── */
+@media (max-width: 639px) {
+  .glass-panel-mobile {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* ── Pure-CSS background glow blobs (replaces JS motion) ── */
+/* These run on the GPU compositor with no JS thread involvement */
+@keyframes glow-drift-1 {
+  0%   { transform: translate(0px, 0px); }
+  33%  { transform: translate(30px, -25px); }
+  66%  { transform: translate(-20px, 20px); }
+  100% { transform: translate(0px, 0px); }
+}
+@keyframes glow-drift-2 {
+  0%   { transform: translate(0px, 0px); }
+  33%  { transform: translate(-35px, 30px); }
+  66%  { transform: translate(20px, -20px); }
+  100% { transform: translate(0px, 0px); }
+}
+@keyframes glow-drift-3 {
+  0%   { transform: translate(0px, 0px); }
+  33%  { transform: translate(20px, -20px); }
+  66%  { transform: translate(-30px, 30px); }
+  100% { transform: translate(0px, 0px); }
+}
+
+.glow-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.glow-blob-1 {
+  top: 5%;
+  left: -8%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(30,47,107,0.14) 0%, transparent 70%);
+  filter: blur(130px);
+  animation: glow-drift-1 18s ease-in-out infinite;
+}
+.glow-blob-2 {
+  top: 50%;
+  right: -8%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(192,57,43,0.09) 0%, transparent 70%);
+  filter: blur(150px);
+  animation: glow-drift-2 22s ease-in-out infinite;
+}
+.glow-blob-3 {
+  bottom: -5%;
+  left: 25%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(21,101,192,0.12) 0%, transparent 70%);
+  filter: blur(110px);
+  animation: glow-drift-3 15s ease-in-out infinite;
+}
+
+/* ── CSS-native pulse animations (replaces JS infinite loops) ── */
+@keyframes pulse-label {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+.animate-pulse-label {
+  animation: pulse-label 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.2); }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Hero background blobs — CSS only, no JS ──────────── */
+@keyframes hero-blob-pulse-1 {
+  0%, 100% { transform: scale(1); opacity: 0.18; }
+  50%      { transform: scale(1.12); opacity: 0.22; }
+}
+@keyframes hero-blob-pulse-2 {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50%      { transform: scale(1.15); opacity: 0.19; }
+}
+
+.hero-bg-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+  pointer-events: none;
+}
+.hero-bg-blob-1 {
+  top: -160px;
+  right: 25%;
+  width: 250px;
+  height: 250px;
+  background: #1e2f6b;
+  filter: blur(120px);
+  animation: hero-blob-pulse-1 8s ease-in-out infinite;
+}
+.hero-bg-blob-2 {
+  bottom: -80px;
+  left: 40px;
+  width: 200px;
+  height: 200px;
+  background: #1565c0;
+  filter: blur(100px);
+  animation: hero-blob-pulse-2 10s ease-in-out infinite;
+}
+@media (min-width: 640px) {
+  .hero-bg-blob-1 { width: 350px; height: 350px; }
+  .hero-bg-blob-2 { width: 300px; height: 300px; }
+}
+
+/* ── Hero floating orbs — CSS only ───────────────────── */
+@keyframes orb-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(6px, -12px); }
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(2px);
+  opacity: 0.35;
+  animation: orb-drift 6s ease-in-out infinite;
+}
+
+/* ── Hero border glow — CSS only ─────────────────────── */
+@keyframes border-glow {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.7; }
+}
+.animate-border-glow {
+  animation: border-glow 4s ease-in-out infinite;
+}
+
+/* ── Dashboard float animations — CSS only ──────────── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes float-slow-reverse {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(10px); }
+}
+.animate-float-slow {
+  animation: float-slow 4s ease-in-out infinite;
+}
+.animate-float-slow-reverse {
+  animation: float-slow-reverse 3.5s ease-in-out infinite;
+}
+
+/* ── Accessibility: respect reduced-motion preference ─────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

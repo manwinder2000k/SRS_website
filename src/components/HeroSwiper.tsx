@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Play, Pause, Sparkles, TrendingUp, Cpu, Server } from "lucide-react";
 
@@ -44,50 +44,6 @@ const SLIDES = [
   },
 ];
 
-/* ── Floating decorative orb ───────────────────────────── */
-function FloatingOrb({
-  size,
-  color,
-  top,
-  left,
-  duration,
-  delay,
-}: {
-  size: number;
-  color: string;
-  top: string;
-  left: string;
-  duration: number;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      className="absolute rounded-full pointer-events-none"
-      style={{
-        width: size,
-        height: size,
-        top,
-        left,
-        background: color,
-        filter: "blur(2px)",
-        opacity: 0.35,
-      }}
-      animate={{
-        y: [0, -20, 10, -15, 0],
-        x: [0, 10, -8, 5, 0],
-        scale: [1, 1.15, 0.95, 1.1, 1],
-        opacity: [0.35, 0.55, 0.3, 0.5, 0.35],
-      }}
-      transition={{
-        duration,
-        delay: delay ?? 0,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
-  );
-}
-
 export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -95,6 +51,16 @@ export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const slideDuration = 6000;
+
+  const handleNext = useCallback(() => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % SLIDES.length);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+  }, []);
 
   useEffect(() => {
     if (isPlaying) {
@@ -105,122 +71,87 @@ export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [currentIndex, isPlaying]);
-
-  const handleNext = () => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % SLIDES.length);
-  };
-
-  const handlePrev = () => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
-  };
+  }, [currentIndex, isPlaying, handleNext]);
 
   const slideVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 200 : -200,
+      x: dir > 0 ? 80 : -80,
       opacity: 0,
-      scale: 0.96,
     }),
     center: {
       x: 0,
       opacity: 1,
-      scale: 1,
     },
     exit: (dir: number) => ({
-      x: dir < 0 ? 200 : -200,
+      x: dir < 0 ? 80 : -80,
       opacity: 0,
-      scale: 0.96,
     }),
   };
 
   const ActiveIcon = SLIDES[currentIndex].icon;
+  const slide = SLIDES[currentIndex];
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#f4f6fc] via-[#edf0f9] to-[#f4f6fc] pt-24 pb-10 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 sm:pt-28 sm:pb-14 lg:pt-36 lg:pb-24">
 
-      {/* Background Graphic blobs */}
+      {/* Background Graphic blobs — pure CSS, no JS animation */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-50 dark:opacity-70">
-        <motion.div
-          className="absolute -top-40 right-1/4 h-[250px] w-[250px] sm:h-[350px] sm:w-[350px] rounded-full blur-[120px]"
-          style={{ backgroundColor: SLIDES[currentIndex].id === 1 ? "#c0392b" : SLIDES[currentIndex].id === 2 ? "#1565c0" : "#1e2f6b", opacity: 0.18 }}
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-20 left-10 h-[200px] w-[200px] sm:h-[300px] sm:w-[300px] rounded-full blur-[100px]"
-          style={{ backgroundColor: SLIDES[currentIndex].id === 1 ? "#1e2f6b" : SLIDES[currentIndex].id === 2 ? "#c0392b" : "#1565c0", opacity: 0.15 }}
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
+        <div className="hero-bg-blob hero-bg-blob-1" />
+        <div className="hero-bg-blob hero-bg-blob-2" />
         <div className="absolute inset-0 grid-bg opacity-20" />
       </div>
 
-      {/* Floating decorative orbs */}
-      <FloatingOrb size={12} color="#c0392b"  top="15%"  left="8%"   duration={5}  delay={0} />
-      <FloatingOrb size={8}  color="#1e2f6b"  top="35%"  left="3%"   duration={7}  delay={1} />
-      <FloatingOrb size={16} color="#1565c0"  top="70%"  left="6%"   duration={6}  delay={2} />
-      <FloatingOrb size={10} color="#c0392b"  top="20%"  left="92%"  duration={8}  delay={0.5} />
-      <FloatingOrb size={14} color="#1e2f6b"  top="55%"  left="95%"  duration={5.5} delay={1.5} />
-      <FloatingOrb size={9}  color="#1565c0"  top="80%"  left="90%"  duration={7}  delay={0.8} />
+      {/* Floating decorative orbs — CSS only, hidden on mobile */}
+      <div className="hidden sm:block">
+        <div className="hero-orb" style={{ top: "15%", left: "8%", width: 12, height: 12, background: "#c0392b" }} />
+        <div className="hero-orb" style={{ top: "35%", left: "3%", width: 8, height: 8, background: "#1e2f6b" }} />
+        <div className="hero-orb" style={{ top: "70%", left: "6%", width: 16, height: 16, background: "#1565c0" }} />
+        <div className="hero-orb" style={{ top: "20%", left: "92%", width: 10, height: 10, background: "#c0392b" }} />
+        <div className="hero-orb" style={{ top: "55%", left: "95%", width: 14, height: 14, background: "#1e2f6b" }} />
+        <div className="hero-orb" style={{ top: "80%", left: "90%", width: 9, height: 9, background: "#1565c0" }} />
+      </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-        {/* Hero entrance animation */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative rounded-2xl sm:rounded-3xl glass-panel p-4 sm:p-8 lg:p-16 overflow-hidden"
+        {/* Hero panel — CSS entrance animation, synced to browser paint */}
+        <div
+          className="relative rounded-2xl sm:rounded-3xl glass-panel glass-panel-mobile p-4 sm:p-8 lg:p-16 overflow-hidden animate-fade-in-up"
         >
-          {/* Animated border glow */}
-          <motion.div
-            className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none"
+          {/* Subtle border glow — CSS only */}
+          <div
+            className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none animate-border-glow"
             style={{
               background: `linear-gradient(135deg, rgba(192,57,43,0.08) 0%, rgba(30,47,107,0.05) 50%, rgba(21,101,192,0.08) 100%)`,
             }}
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
           {/* Top Info Bar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <motion.span
-                className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-[#1e2f6b]/8 dark:bg-[#1e2f6b]/30 border border-[#1e2f6b]/15 dark:border-[#4a72d4]/25 px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-semibold text-[#1e2f6b] dark:text-[#79a8f0] shrink-0"
-                animate={{ scale: [1, 1.04, 1] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <motion.span
-                  animate={{ rotate: [0, 20, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#c0392b]" />
-                </motion.span>
+              <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-[#1e2f6b]/8 dark:bg-[#1e2f6b]/30 border border-[#1e2f6b]/15 dark:border-[#4a72d4]/25 px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-semibold text-[#1e2f6b] dark:text-[#79a8f0] shrink-0">
+                <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#c0392b]" />
                 Featured
-              </motion.span>
+              </span>
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={SLIDES[currentIndex].badge}
-                  initial={{ opacity: 0, y: -8 }}
+                  key={slide.badge}
+                  initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
+                  exit={{ opacity: 0, y: 6 }}
+                  transition={{ duration: 0.2 }}
                   className="text-[10px] sm:text-xs font-bold text-[#c0392b] dark:text-[#e05444] truncate"
                 >
-                  {SLIDES[currentIndex].badge}
+                  {slide.badge}
                 </motion.span>
               </AnimatePresence>
             </div>
 
-            <motion.button
+            <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="rounded-full p-1.5 sm:p-2 text-zinc-400 hover:bg-zinc-200/50 hover:text-zinc-700 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-200 transition shrink-0"
+              className="rounded-full p-1.5 sm:p-2 text-zinc-400 hover:bg-zinc-200/50 hover:text-zinc-700 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-200 transition-colors shrink-0"
               title={isPlaying ? "Pause Slideshow" : "Play Slideshow"}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
             >
               {isPlaying ? <Pause className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-            </motion.button>
+            </button>
           </div>
 
           {/* Slider Container */}
@@ -235,80 +166,49 @@ export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="space-y-4 sm:space-y-6"
                 >
-                  <motion.h1
-                    className={`text-2xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl xl:text-6xl text-transparent bg-clip-text bg-gradient-to-r ${SLIDES[currentIndex].gradient} leading-tight`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1, duration: 0.5 }}
+                  {/* Static children — no nested initial/animate to avoid layout thrashing */}
+                  <h1
+                    className={`text-2xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl xl:text-6xl text-transparent bg-clip-text bg-gradient-to-r ${slide.gradient} leading-tight`}
                   >
-                    {SLIDES[currentIndex].title}
-                  </motion.h1>
-                  <motion.p
-                    className="text-sm text-zinc-650 dark:text-zinc-300 leading-relaxed max-w-xl sm:text-base lg:text-lg"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.4 }}
-                  >
-                    {SLIDES[currentIndex].subtitle}
-                  </motion.p>
+                    {slide.title}
+                  </h1>
+                  <p className="text-sm text-zinc-650 dark:text-zinc-300 leading-relaxed max-w-xl sm:text-base lg:text-lg">
+                    {slide.subtitle}
+                  </p>
 
                   {/* Internal metrics */}
-                  <motion.div
-                    className="inline-flex items-center gap-3 bg-[#1e2f6b]/5 dark:bg-[#1e2f6b]/20 border border-[#1e2f6b]/10 dark:border-[#4a72d4]/20 rounded-xl sm:rounded-2xl p-3 sm:p-4"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                  >
-                    <motion.div
-                      className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-[#0e1223] text-[#1e2f6b] dark:text-[#79a8f0] shadow-sm shrink-0"
-                      animate={{ rotate: [0, -5, 5, 0] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    >
+                  <div className="inline-flex items-center gap-3 bg-[#1e2f6b]/5 dark:bg-[#1e2f6b]/20 border border-[#1e2f6b]/10 dark:border-[#4a72d4]/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                    <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white dark:bg-[#0e1223] text-[#1e2f6b] dark:text-[#79a8f0] shadow-sm shrink-0">
                       <ActiveIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </motion.div>
+                    </div>
                     <div>
-                      <motion.div
-                        className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-white"
-                        key={SLIDES[currentIndex].statValue}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                      >
-                        {SLIDES[currentIndex].statValue}
-                      </motion.div>
+                      <div className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                        {slide.statValue}
+                      </div>
                       <div className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                        {SLIDES[currentIndex].statLabel}
+                        {slide.statLabel}
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
 
                   {/* Buttons */}
-                  <motion.div
-                    className="flex flex-wrap items-center gap-3 pt-1 sm:pt-2"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.4 }}
-                  >
-                    <motion.button
-                      onClick={() => onBookDemo(SLIDES[currentIndex].title)}
-                      className={`rounded-xl px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-white shadow-lg hover:brightness-110 transition cursor-pointer bg-gradient-to-r ${SLIDES[currentIndex].gradient}`}
-                      whileHover={{ scale: 1.05, boxShadow: "0 12px 30px rgba(30,47,107,0.4)" }}
-                      whileTap={{ scale: 0.97 }}
+                  <div className="flex flex-wrap items-center gap-3 pt-1 sm:pt-2">
+                    <button
+                      onClick={() => onBookDemo(slide.title)}
+                      className={`rounded-xl px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-white shadow-lg hover:brightness-110 transition-all cursor-pointer bg-gradient-to-r ${slide.gradient} hover:scale-[1.03] active:scale-[0.98]`}
                     >
                       Book Live Demo
-                    </motion.button>
-                    <motion.a
+                    </button>
+                    <a
                       href="#products"
-                      className="rounded-xl border border-[#1e2f6b]/20 dark:border-[#4a72d4]/25 bg-white/60 px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-[#1e2f6b] dark:text-[#79a8f0] backdrop-blur hover:bg-white hover:border-[#c0392b]/40 hover:text-[#c0392b] dark:hover:bg-[#1e2f6b]/15 transition"
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
+                      className="rounded-xl border border-[#1e2f6b]/20 dark:border-[#4a72d4]/25 bg-white/60 px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-[#1e2f6b] dark:text-[#79a8f0] backdrop-blur hover:bg-white hover:border-[#c0392b]/40 hover:text-[#c0392b] dark:hover:bg-[#1e2f6b]/15 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                       View Capabilities
-                    </motion.a>
-                  </motion.div>
+                    </a>
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -323,53 +223,34 @@ export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="w-full max-w-[360px] aspect-square rounded-2xl border border-zinc-200/50 bg-white/40 p-6 dark:border-zinc-800/40 dark:bg-zinc-900/35 flex flex-col justify-between shadow-xl relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 bg-radial from-transparent to-black/5 opacity-50 dark:to-black/35" />
 
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                    className={`absolute right-4 top-4 h-12 w-12 rounded-full opacity-20 blur-sm bg-gradient-to-r ${SLIDES[currentIndex].gradient}`}
-                  />
-                  <motion.div
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut", delay: 1 }}
-                    className={`absolute left-4 bottom-4 h-16 w-16 rounded-full opacity-10 blur-sm bg-gradient-to-r ${SLIDES[currentIndex].gradient}`}
-                  />
+                  {/* Decorative blobs — CSS animations only */}
+                  <div className={`absolute right-4 top-4 h-12 w-12 rounded-full opacity-20 blur-sm bg-gradient-to-r ${slide.gradient} animate-float-slow`} />
+                  <div className={`absolute left-4 bottom-4 h-16 w-16 rounded-full opacity-10 blur-sm bg-gradient-to-r ${slide.gradient} animate-float-slow-reverse`} />
 
                   <div className="flex items-center justify-between border-b border-zinc-200/40 dark:border-zinc-800/40 pb-3">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">System Dashboard</span>
-                    <motion.span
-                      className="h-2 w-2 rounded-full bg-emerald-500"
-                      animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    />
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-dot" />
                   </div>
 
                   <div className="my-auto space-y-4 relative z-10">
                     <div className="space-y-1.5">
                       <div className="h-2 w-1/3 rounded bg-zinc-250 dark:bg-zinc-800" />
-                      <motion.div
-                        className="h-4.5 w-full rounded bg-zinc-200 dark:bg-zinc-700 font-mono text-[10px] flex items-center px-2 text-zinc-500"
-                        animate={{ opacity: [0.7, 1, 0.7] }}
-                        transition={{ duration: 2.5, repeat: Infinity }}
-                      >
+                      <div className="h-4.5 w-full rounded bg-zinc-200 dark:bg-zinc-700 font-mono text-[10px] flex items-center px-2 text-zinc-500 animate-pulse-label">
                         {`{"status": "active", "latency": "12ms"}`}
-                      </motion.div>
+                      </div>
                     </div>
                     <div className="space-y-1.5">
                       <div className="h-2 w-1/2 rounded bg-zinc-250 dark:bg-zinc-800" />
                       <div className="h-7 w-full rounded bg-gradient-to-r from-zinc-250 to-zinc-150 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-between px-2 text-xs font-mono text-[#1e2f6b] dark:text-[#79a8f0]">
                         <span>API Load</span>
-                        <motion.span
-                          className="font-bold text-emerald-500"
-                          animate={{ opacity: [1, 0.5, 1] }}
-                          transition={{ duration: 1.8, repeat: Infinity }}
-                        >
+                        <span className="font-bold text-emerald-500 animate-pulse-label">
                           Normal
-                        </motion.span>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -387,39 +268,34 @@ export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
           <div className="mt-8 sm:mt-12 flex items-center justify-between border-t border-zinc-200/30 dark:border-zinc-800/30 pt-4 sm:pt-6">
             {/* Arrows */}
             <div className="flex gap-1.5 sm:gap-2">
-              <motion.button
+              <button
                 onClick={handlePrev}
-                className="rounded-xl border border-zinc-300 p-1.5 sm:p-2 text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900 dark:border-zinc-850 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200 transition"
-                whileHover={{ scale: 1.12, x: -2 }}
-                whileTap={{ scale: 0.9 }}
+                className="rounded-xl border border-zinc-300 p-1.5 sm:p-2 text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900 dark:border-zinc-850 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200 transition-colors hover:scale-110 active:scale-90"
               >
                 <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </motion.button>
-              <motion.button
+              </button>
+              <button
                 onClick={handleNext}
-                className="rounded-xl border border-zinc-300 p-1.5 sm:p-2 text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900 dark:border-zinc-850 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200 transition"
-                whileHover={{ scale: 1.12, x: 2 }}
-                whileTap={{ scale: 0.9 }}
+                className="rounded-xl border border-zinc-300 p-1.5 sm:p-2 text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900 dark:border-zinc-850 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200 transition-colors hover:scale-110 active:scale-90"
               >
                 <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </motion.button>
+              </button>
             </div>
 
             {/* Position Indicators */}
             <div className="flex items-center gap-1.5">
-              {SLIDES.map((slide, idx) => (
-                <motion.button
-                  key={slide.id}
+              {SLIDES.map((s, idx) => (
+                <button
+                  key={s.id}
                   onClick={() => {
                     setDirection(idx > currentIndex ? 1 : -1);
                     setCurrentIndex(idx);
                   }}
-                  animate={{
+                  className="h-2 rounded-full transition-all duration-300"
+                  style={{
                     width: idx === currentIndex ? 28 : 8,
                     backgroundColor: idx === currentIndex ? "#c0392b" : "rgba(30,47,107,0.25)",
                   }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="h-2 rounded-full"
                 />
               ))}
             </div>
@@ -433,9 +309,10 @@ export default function HeroSwiper({ onBookDemo }: HeroSwiperProps) {
               animate={{ scaleX: 1 }}
               transition={{ duration: slideDuration / 1000, ease: "linear" }}
               className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#c0392b] via-[#1e2f6b] to-[#1565c0] origin-left"
+              style={{ willChange: "transform" }}
             />
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,20 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Star, MessageSquareQuote, ShieldCheck } from "lucide-react";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { Star, MessageSquareQuote } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import HeroSwiper from "@/components/HeroSwiper";
 import ClientMarquee from "@/components/ClientMarquee";
-import AboutSection from "@/components/AboutSection";
-import ProductsSection from "@/components/ProductsSection";
-import WebDevSection from "@/components/WebDevSection";
-import DownloadSection from "@/components/DownloadSection";
-import ContactSection from "@/components/ContactSection";
-import DemoModal from "@/components/DemoModal";
-import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ScrollProgress";
+
+// Lazy-load all below-fold sections for faster initial paint
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const ProductsSection = lazy(() => import("@/components/ProductsSection"));
+const WebDevSection = lazy(() => import("@/components/WebDevSection"));
+const DownloadSection = lazy(() => import("@/components/DownloadSection"));
+const ContactSection = lazy(() => import("@/components/ContactSection"));
+const DemoModal = lazy(() => import("@/components/DemoModal"));
+const Footer = lazy(() => import("@/components/Footer"));
+
+// Lightweight skeleton used as Suspense fallback
+function SectionSkeleton() {
+  return (
+    <div className="py-20 flex items-center justify-center opacity-30" aria-hidden="true">
+      <div className="h-2 w-32 rounded-full bg-zinc-300 dark:bg-zinc-700 animate-pulse" />
+    </div>
+  );
+}
+
+import { motion } from "framer-motion";
 
 const TESTIMONIALS = [
   {
@@ -74,7 +86,7 @@ export default function Home() {
 
     const observerOptions = {
       root: null,
-      rootMargin: "-40% 0px -55% 0px", // High precision active window boundary
+      rootMargin: "-40% 0px -55% 0px",
       threshold: 0,
     };
 
@@ -107,26 +119,11 @@ export default function Home() {
       {/* Scroll Progress Bar */}
       <ScrollProgress />
 
-      {/* Dynamic Background decorative glow blobs */}
+      {/* Dynamic Background — pure CSS keyframes, no JS-driven animation on fixed layer */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-40 dark:opacity-50">
-        <motion.div
-          className="absolute top-[5%] left-[-8%] h-[450px] w-[450px] rounded-full blur-[130px]"
-          style={{ background: 'radial-gradient(circle, rgba(30,47,107,0.14) 0%, transparent 70%)' }}
-          animate={{ x: [0, 30, -20, 0], y: [0, -25, 20, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-[50%] right-[-8%] h-[500px] w-[500px] rounded-full blur-[150px]"
-          style={{ background: 'radial-gradient(circle, rgba(192,57,43,0.09) 0%, transparent 70%)' }}
-          animate={{ x: [0, -35, 20, 0], y: [0, 30, -20, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[-5%] left-[25%] h-[350px] w-[350px] rounded-full blur-[110px]"
-          style={{ background: 'radial-gradient(circle, rgba(21,101,192,0.12) 0%, transparent 70%)' }}
-          animate={{ x: [0, 20, -30, 0], y: [0, -20, 30, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
+        <div className="glow-blob glow-blob-1" />
+        <div className="glow-blob glow-blob-2" />
+        <div className="glow-blob glow-blob-3" />
       </div>
 
       {/* Navbar Header */}
@@ -140,22 +137,26 @@ export default function Home() {
       {/* Main Sections */}
       <main className="flex-grow z-10">
 
-        {/* Home Banner Section */}
+        {/* Home Banner Section — eager load, above fold */}
         <div id="home">
           <HeroSwiper onBookDemo={triggerBookDemo} />
         </div>
 
-        {/* Brand client logo banner */}
+        {/* Brand client logo banner — eager load, visible immediately */}
         <ClientMarquee />
 
-        {/* Vision & Core Pillars Section */}
-        <AboutSection />
+        {/* Below-fold sections — lazy loaded */}
+        <Suspense fallback={<SectionSkeleton />}>
+          <AboutSection />
+        </Suspense>
 
-        {/* Core Products Grid Section */}
-        <ProductsSection onBookDemo={triggerBookDemo} />
+        <Suspense fallback={<SectionSkeleton />}>
+          <ProductsSection onBookDemo={triggerBookDemo} />
+        </Suspense>
 
-        {/* Customized Web Stack Section */}
-        <WebDevSection />
+        <Suspense fallback={<SectionSkeleton />}>
+          <WebDevSection />
+        </Suspense>
 
         {/* Testimonials Block */}
         <section className="relative py-20 bg-[#f0f3fa] dark:bg-zinc-950/60 sm:py-24 border-y border-[#d4daf0]/60 dark:border-[#1e2f6b]/20">
@@ -165,7 +166,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
+                viewport={{ once: true, margin: "-20px" }}
                 className="badge-brand inline-flex"
               >
                 <MessageSquareQuote className="h-3.5 w-3.5" />
@@ -174,7 +175,7 @@ export default function Home() {
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
+                viewport={{ once: true, margin: "-20px" }}
                 transition={{ delay: 0.1 }}
                 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-4xl"
               >
@@ -183,7 +184,7 @@ export default function Home() {
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
+                viewport={{ once: true, margin: "-20px" }}
                 transition={{ delay: 0.2 }}
                 className="text-zinc-650 dark:text-zinc-400 text-sm sm:text-base leading-relaxed"
               >
@@ -196,8 +197,8 @@ export default function Home() {
               className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3"
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-80px" }}
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+              viewport={{ once: true, margin: "-20px" }}
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
             >
               {TESTIMONIALS.map((test, index) => (
                 <motion.div
@@ -236,22 +237,30 @@ export default function Home() {
         </section>
 
         {/* Resources / PDF downloads Section */}
-        <DownloadSection />
+        <Suspense fallback={<SectionSkeleton />}>
+          <DownloadSection />
+        </Suspense>
 
         {/* Map & Feedback inquiries Section */}
-        <ContactSection />
+        <Suspense fallback={<SectionSkeleton />}>
+          <ContactSection />
+        </Suspense>
 
       </main>
 
       {/* Footer Details */}
-      <Footer />
+      <Suspense fallback={<SectionSkeleton />}>
+        <Footer />
+      </Suspense>
 
       {/* Demo Scheduler Modal dialog */}
-      <DemoModal
-        isOpen={isDemoModalOpen}
-        onClose={() => setIsDemoModalOpen(false)}
-        selectedProduct={selectedProductDemo}
-      />
+      <Suspense fallback={null}>
+        <DemoModal
+          isOpen={isDemoModalOpen}
+          onClose={() => setIsDemoModalOpen(false)}
+          selectedProduct={selectedProductDemo}
+        />
+      </Suspense>
 
     </div>
   );

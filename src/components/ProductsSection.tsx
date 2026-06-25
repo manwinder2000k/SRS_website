@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import {
   Building2,
@@ -104,6 +104,12 @@ function TiltCard({
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia("(hover: none)").matches);
+  }, []);
+
   const rotateX = useTransform(y, [-0.5, 0.5], [8, -8]);
   const rotateY = useTransform(x, [-0.5, 0.5], [-8, 8]);
   const glowX = useTransform(x, [-0.5, 0.5], ["0%", "100%"]);
@@ -117,6 +123,7 @@ function TiltCard({
   const ProductIcon = prod.icon;
 
   function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
+    if (isTouchDevice) return;
     const rect = ref.current!.getBoundingClientRect();
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
@@ -139,7 +146,7 @@ function TiltCard({
           transition: { type: "spring", stiffness: 90, damping: 18, delay: index * 0.07 },
         },
       }}
-      style={{ rotateX, rotateY, transformPerspective: 1200 }}
+      style={{ rotateX: isTouchDevice ? 0 : rotateX, rotateY: isTouchDevice ? 0 : rotateY, transformPerspective: 1200, willChange: "transform" }}
       onMouseMove={handleMouse}
       onMouseLeave={handleLeave}
       className="relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/40 overflow-hidden group cursor-default"
@@ -175,16 +182,22 @@ function TiltCard({
           {prod.description}
         </p>
 
-        {/* Checklist */}
-        <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-2.5">
+        {/* Checklist — single whileInView on the ul, not on each li */}
+        <motion.ul
+          className="mt-4 sm:mt-6 space-y-2 sm:space-y-2.5"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-20px" }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+        >
           {prod.features.map((feature, i) => (
             <motion.li
               key={i}
               className="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300"
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06 + index * 0.04 }}
+              variants={{
+                hidden: { opacity: 0, x: -10 },
+                visible: { opacity: 1, x: 0 },
+              }}
             >
               <motion.div
                 className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#1e2f6b]/8 dark:bg-[#1e2f6b]/25 text-[#1e2f6b] dark:text-[#79a8f0]"
@@ -196,7 +209,7 @@ function TiltCard({
               <span>{feature}</span>
             </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </div>
 
       {/* Footer and Tags */}
@@ -261,7 +274,7 @@ export default function ProductsSection({ onBookDemo }: ProductsSectionProps) {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true, margin: "-20px" }}
             className="inline-flex items-center gap-1.5 rounded-full border border-[#1e2f6b]/20 bg-[#1e2f6b]/5 px-3 py-1 text-xs font-semibold text-[#1e2f6b] dark:text-[#79a8f0] dark:border-[#4a72d4]/25 dark:bg-[#4a72d4]/8"
           >
             <Sparkles className="h-3.5 w-3.5 text-[#c0392b]" />
@@ -290,10 +303,10 @@ export default function ProductsSection({ onBookDemo }: ProductsSectionProps) {
 
         {/* Products Grid — 3D tilt cards */}
         <motion.div
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
+          viewport={{ once: true, margin: "-20px" }}
           className="mt-10 sm:mt-14 lg:mt-16 grid grid-cols-1 gap-5 sm:gap-8 sm:grid-cols-2"
           style={{ perspective: 1200 }}
         >

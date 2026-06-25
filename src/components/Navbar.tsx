@@ -20,7 +20,7 @@ export default function Navbar({ theme, toggleTheme, activeSection, onBookDemo }
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -47,35 +47,29 @@ export default function Navbar({ theme, toggleTheme, activeSection, onBookDemo }
 
           {/* TIER 1: Logo & Key Actions (Desktop) / Full Header (Mobile) */}
           <div className="flex items-center justify-between py-3">
-            {/* Logo Group */}
-            <motion.a
+            {/* Logo Group — CSS entrance animation, no JS overhead */}
+            <a
               href="#home"
-              className="flex items-center group"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="flex items-center group animate-fade-in-left"
             >
-              <motion.div
-                whileHover={{ scale: 1.06 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
+              <div className="transition-transform duration-200 hover:scale-105">
                 <Image
                   src="/vision-logo.png"
                   alt="Gulati's Vision Software & Website Development"
-                  width={160}
-                  height={64}
-                  className="h-14 w-auto object-contain drop-shadow-sm"
+                  width={220}
+                  height={80}
+                  className="h-16 sm:h-[72px] w-auto object-contain drop-shadow-sm"
                   priority
                 />
-              </motion.div>
-            </motion.a>
+              </div>
+            </a>
 
             {/* Desktop Tier 1 Right Actions */}
             <div className="hidden items-center gap-5 md:flex">
               {/* Phone Line */}
               <a
                 href="tel:+18005550199"
-                className="flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-[#c0392b] dark:text-zinc-300 dark:hover:text-[#4fc3f7] transition"
+                className="flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-[#c0392b] dark:text-zinc-300 dark:hover:text-[#4fc3f7] transition-colors"
                 title="Sales Support Direct"
               >
                 <Phone className="h-4 w-4 text-[#1e2f6b] dark:text-[#4fc3f7]" />
@@ -85,22 +79,19 @@ export default function Navbar({ theme, toggleTheme, activeSection, onBookDemo }
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
-                className="rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-2 text-zinc-650 transition hover:bg-zinc-100 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-50"
+                className="rounded-xl border border-zinc-200/80 bg-zinc-50/50 p-2 text-zinc-650 transition-colors hover:bg-zinc-100 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-50"
                 aria-label="Toggle Theme"
               >
                 {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
               </button>
 
-              {/* Booking Button */}
-              <motion.button
+              {/* Booking Button — CSS hover instead of JS whileHover */}
+              <button
                 onClick={onBookDemo}
-                className="relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-[#c0392b] via-[#1e2f6b] to-[#1565c0] px-5 py-2.5 text-xs font-bold text-white shadow-md cursor-pointer"
-                whileHover={{ scale: 1.05, boxShadow: "0 8px 25px rgba(30,47,107,0.40)" }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-[#c0392b] via-[#1e2f6b] to-[#1565c0] px-5 py-2.5 text-xs font-bold text-white shadow-md cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-[0_8px_25px_rgba(30,47,107,0.40)] active:scale-[0.96]"
               >
                 Book Demo
-              </motion.button>
+              </button>
             </div>
 
             {/* Mobile Actions Header Bar */}
@@ -108,7 +99,7 @@ export default function Navbar({ theme, toggleTheme, activeSection, onBookDemo }
               {/* Mobile Mode Switcher */}
               <button
                 onClick={toggleTheme}
-                className="rounded-xl border border-zinc-200/80 p-2 text-zinc-650 transition hover:bg-zinc-105 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
+                className="rounded-xl border border-zinc-200/80 p-2 text-zinc-650 transition-colors hover:bg-zinc-105 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
               >
                 {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4.5 w-4.5" />}
               </button>
@@ -116,29 +107,26 @@ export default function Navbar({ theme, toggleTheme, activeSection, onBookDemo }
               {/* Hamburger Button */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="rounded-xl border border-zinc-200/80 p-2 text-zinc-655 transition hover:bg-zinc-105 dark:border-zinc-800 dark:text-zinc-450"
+                className="rounded-xl border border-zinc-200/80 p-2 text-zinc-655 transition-colors hover:bg-zinc-105 dark:border-zinc-800 dark:text-zinc-450"
               >
                 {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>
 
-          {/* TIER 2: Centered Navigation links (Desktop only, visible md and above) */}
+          {/* TIER 2: Centered Navigation links (Desktop only) */}
           <div className="hidden border-t border-zinc-200/40 dark:border-zinc-800/40 md:block">
             <nav className="flex justify-center items-center py-2 gap-1.5 lg:gap-2">
               {navItems.map((item, idx) => (
-                <motion.a
+                <a
                   key={item.name}
                   href={item.href}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 + idx * 0.07, type: "spring", stiffness: 200, damping: 18 }}
-                  whileHover={{ scale: 1.04 }}
-                  className={`relative rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition duration-200 lg:text-sm ${
+                  className={`nav-link-enter relative rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-colors duration-200 lg:text-sm ${
                     activeSection === item.href.slice(1)
                       ? "text-[#c0392b] dark:text-[#4fc3f7]"
                       : "text-[#1e2f6b] hover:bg-blue-50 hover:text-[#c0392b] dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-[#4fc3f7]"
                   }`}
+                  style={{ animationDelay: `${0.05 + idx * 0.06}s` }}
                 >
                   {item.name}
                   {activeSection === item.href.slice(1) && (
@@ -148,7 +136,7 @@ export default function Navbar({ theme, toggleTheme, activeSection, onBookDemo }
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
-                </motion.a>
+                </a>
               ))}
             </nav>
           </div>

@@ -53,7 +53,7 @@ export default function WebDevSection() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true, margin: "-20px" }}
             className="inline-flex items-center gap-1.5 rounded-full border border-[#1e2f6b]/20 bg-[#1e2f6b]/5 px-3 py-1 text-xs font-semibold text-[#1e2f6b] dark:text-[#79a8f0] dark:border-[#4a72d4]/25 dark:bg-[#4a72d4]/8"
           >
             <motion.span
@@ -67,7 +67,7 @@ export default function WebDevSection() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true, margin: "-20px" }}
             transition={{ delay: 0.1 }}
             className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl lg:text-4xl"
           >
@@ -77,7 +77,7 @@ export default function WebDevSection() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true, margin: "-20px" }}
             transition={{ delay: 0.2 }}
             className="text-zinc-650 dark:text-zinc-400 text-sm sm:text-base leading-relaxed"
           >
@@ -89,8 +89,8 @@ export default function WebDevSection() {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
+          viewport={{ once: true, margin: "-20px" }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
           className="mt-10 sm:mt-14 lg:mt-16 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
           {SERVICES.map((serv, index) => {
@@ -123,13 +123,9 @@ export default function WebDevSection() {
                     >
                       <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                     </motion.div>
-                    <motion.span
-                      className="text-[9px] sm:text-[10px] font-bold text-[#c0392b] dark:text-[#e05444] uppercase tracking-widest text-right leading-tight"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.4 }}
-                    >
+                    <span className="animate-pulse-label text-[9px] sm:text-[10px] font-bold text-[#c0392b] dark:text-[#e05444] uppercase tracking-widest text-right leading-tight">
                       {serv.metric}
-                    </motion.span>
+                    </span>
                   </div>
                   <h3 className="mt-4 sm:mt-6 text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
                     {serv.title}
@@ -147,7 +143,7 @@ export default function WebDevSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
+          viewport={{ once: true, margin: "-20px" }}
           className="mt-16 sm:mt-20 lg:mt-24 text-center max-w-2xl mx-auto"
         >
           <h3 className="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-white">
@@ -168,7 +164,7 @@ export default function WebDevSection() {
               key={idx}
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
+                  viewport={{ once: true, margin: "-20px" }}
               transition={{ type: "spring", stiffness: 100, damping: 15, delay: idx * 0.15 }}
               whileHover={{ y: -5, scale: 1.02, borderColor: "rgba(192,57,43,0.4)", transition: { type: "spring", stiffness: 300 } }}
               className="relative p-5 sm:p-6 rounded-2xl border border-[#d4daf0]/60 dark:border-[#1e2f6b]/20 bg-[#f0f3fa]/60 dark:bg-[#0e1223]/30 group z-10 cursor-default"
@@ -182,12 +178,8 @@ export default function WebDevSection() {
                 {step.step}
               </motion.span>
 
-              {/* Step dot */}
-              <motion.div
-                className="w-4 h-4 rounded-full bg-gradient-to-br from-[#c0392b] to-[#1e2f6b] mb-3 shadow-md"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: idx * 0.4 }}
-              />
+              {/* Step dot — CSS pulse, no JS animation loop */}
+              <div className="animate-pulse-dot w-4 h-4 rounded-full bg-gradient-to-br from-[#c0392b] to-[#1e2f6b] mb-3 shadow-md" />
 
               <div className="text-sm font-bold text-zinc-900 dark:text-white pr-8">
                 {step.name}
